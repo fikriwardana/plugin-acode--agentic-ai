@@ -1,0 +1,23 @@
+{
+  "id": "agentic_ai",
+  "name": "Agentic AI",
+  "version": "1.0.0",
+  "main": "main.js",
+  "stylesheet": "style.css",
+  "icon": "icon.png",
+  "minVersionCode": 290,
+  "author": {
+    "name": "Fikri",
+    "email": "kripikid4@gmail.com"
+  },
+  "description": "Multi-provider AI coding agent with supervised execution for advanced mobile development.",
+  "keywords": [
+    "ai",
+    "agent",
+    "coding-assistant",
+    "automation",
+    "llm"
+  ],
+  "license": "MIT",
+  "repository": "https://github.com/fikriwardana"
+}
