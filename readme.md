@@ -33,5 +33,6 @@ Customize the agent's behavior through the settings panel:
 ### 📄 License
 Distributed under the **MIT License**.
 
+link plugin:https://acode.app/plugin/agentic_ai/description
 ---
 *Developed with ❤️ for the mobile coding community by **Fikri Wardana***
