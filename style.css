@@ -1,10 +1,31 @@
 /* ===================================================
+   AGENTIC AI - OPTIMIZED MULTI-PROVIDER GENT STYLES
+   =================================================== */
 
 .zoot {
   --ag_bg: #0d0f0f;
   --ag_bg2: #151519;
   --ag_bg3: #1e1e24;
-  -ag_accent: #00d4aa;
+  --ag_accent: #00d4aa;
   --ag_text: #e8e8ec;
-  -ag_text2: #9090a0p;
-  --ag_border: #2a2a35;}
+  --ag_text2: #9090a0;
+  --ag_border: #2a2a35;
+}
+
+.zoot-container {
+  background-color: var(--ag_bg);
+  color: var(--ag_text);
+  border: 1px solid var(--ag_border);
+  border-radius: 4px;
+  padding: 10px;
+}
+
+.zoot-accent {
+  color: var(--ag_accent);
+  font-weight: bold;
+}
+
+.zoot-secondary-text {
+  color: var(--ag_text2);
+  font-size: 0.9em;
+}
