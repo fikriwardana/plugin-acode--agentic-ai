@@ -3,10 +3,9 @@
  * ==================================================== */
 
 class AgenticAIPlugin {
-  constructor(baseObject, args) {
-    this.baseObject = baseObject;
-    this.args = args;
+  constructor() {
     this.id = "agentic_ai";
+    this.baseUrl = "";
   }
 
   async init() {
@@ -19,7 +18,7 @@ class AgenticAIPlugin {
   loadStyles() {
     const styleLink = document.createElement("link");
     styleLink.rel = "stylesheet";
-    styleLink.href = "./style.css";
+    styleLink.href = this.baseUrl + "style.css";
     document.head.appendChild(styleLink);
   }
 
@@ -65,12 +64,21 @@ class AgenticAIPlugin {
     }
   }
 
-  onDestroy() {
+  async destroy() {
     console.log("Destroying Agentic AI Plugin...");
   }
 }
 
-// Export plugin for Acode
-if (typeof module !== "undefined" && module.exports) {
-  module.exports = AgenticAIPlugin;
+if (window.acode) {
+  const acodePlugin = new AgenticAIPlugin();
+  acode.setPluginInit("agentic_ai", async (baseUrl, $page, { cacheFileUrl, cacheFile }) => {
+    if (!baseUrl.endsWith('/')) {
+      baseUrl += '/';
+    }
+    acodePlugin.baseUrl = baseUrl;
+    await acodePlugin.init($page, cacheFile, cacheFileUrl);
+  });
+  acode.setPluginUnmount("agentic_ai", () => {
+    acodePlugin.destroy();
+  });
 }
