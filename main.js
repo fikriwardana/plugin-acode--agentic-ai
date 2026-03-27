@@ -19,6 +19,7 @@ class AgenticAIPlugin {
     const styleLink = document.createElement("link");
     styleLink.rel = "stylesheet";
     styleLink.href = this.baseUrl + "style.css";
+    styleLink.id = "agentic-ai-style";
     document.head.appendChild(styleLink);
   }
 
@@ -66,6 +67,10 @@ class AgenticAIPlugin {
 
   async destroy() {
     console.log("Destroying Agentic AI Plugin...");
+    const styleLink = document.getElementById("agentic-ai-style");
+    if (styleLink) {
+      styleLink.remove();
+    }
   }
 }
 
