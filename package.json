@@ -1,0 +1,21 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "**A multi-provider AI coding agent with supervised execution, purpose-built for the Acode editor.**",
+  "main": "main.js",
+  "scripts": {
+    "test": "node --test tests/*.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fikriwardana/plugin-acode--agentic-ai.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/fikriwardana/plugin-acode--agentic-ai/issues"
+  },
+  "homepage": "https://github.com/fikriwardana/plugin-acode--agentic-ai#readme"
+}
