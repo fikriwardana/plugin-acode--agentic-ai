@@ -1,0 +1,293 @@
+/* --- GLOBAL & BASE --- */
+:root {
+  --pou-color: #8B4513; /* SaddleBrown */
+  --pou-eye-color: #FFF;
+  --pou-iris-color: #000;
+  --pou-bg-color: #f4d03f;
+
+  --ui-bg: rgba(255, 255, 255, 0.2);
+  --ui-border: rgba(255, 255, 255, 0.5);
+  --text-color: #fff;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: #000;
+  position: relative;
+}
+
+/* --- CAMERA & CANVAS OVERLAYS --- */
+video {
+  display: none; /* Hide raw video, we use canvas to draw mirrored frame */
+}
+
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+  /* NO transform: scaleX(-1) here because engine.js already mirrors the canvas context */
+}
+
+/* --- GAME AREA (Pou & Minigame Overlays) --- */
+#game_area {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none; /* Let clicks pass through if needed */
+}
+
+/* --- POU CHARACTER PLACEHOLDER CSS --- */
+#pou-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200px;
+  height: 200px;
+  transition: transform 0.1s ease-out; /* Smooth lerp transition */
+}
+
+.pou {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: var(--pou-color);
+  border-radius: 50% 50% 40% 40%;
+  box-shadow: inset -10px -10px 20px rgba(0,0,0,0.5);
+  transition: all 0.3s;
+}
+
+.pou .eyes {
+  position: absolute;
+  top: 40%;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  padding: 0 40px;
+}
+
+.pou .eye {
+  width: 30px;
+  height: 40px;
+  background: var(--pou-eye-color);
+  border-radius: 50%;
+  position: relative;
+}
+
+.pou .eye::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 15px;
+  height: 15px;
+  background: var(--pou-iris-color);
+  border-radius: 50%;
+}
+
+.pou .mouth {
+  position: absolute;
+  top: 65%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 20px;
+  border-bottom: 5px solid #000;
+  border-radius: 0 0 50% 50%;
+}
+
+/* EXPRESSION CLASSES */
+.pou.happy .mouth {
+  width: 50px;
+  height: 30px;
+  background-color: #ffcccc;
+}
+.pou.sad .mouth {
+  border-bottom: none;
+  border-top: 5px solid #000;
+  border-radius: 50% 50% 0 0;
+}
+.pou.surprised .mouth {
+  width: 20px;
+  height: 20px;
+  border: 5px solid #000;
+  border-radius: 50%;
+}
+.pou.eating .mouth {
+  width: 60px;
+  height: 40px;
+  background-color: #ff9999;
+  border-radius: 50%;
+}
+.pou.sleeping .eye {
+  height: 10px;
+  background: transparent;
+  border-bottom: 5px solid #000;
+  border-radius: 0;
+}
+.pou.sleeping .eye::after {
+  display: none;
+}
+.pou.angry {
+  background-color: #b30000;
+  box-shadow: 0 0 20px red, inset -10px -10px 20px rgba(0,0,0,0.5);
+  animation: shake 0.1s infinite;
+}
+.pou.angry .mouth {
+  border-bottom: none;
+  border-top: 5px solid #000;
+  width: 60px;
+}
+@keyframes shake {
+  0% { transform: translate(1px, 1px) rotate(0deg); }
+  10% { transform: translate(-1px, -2px) rotate(-1deg); }
+  20% { transform: translate(-3px, 0px) rotate(1deg); }
+  30% { transform: translate(3px, 2px) rotate(0deg); }
+  40% { transform: translate(1px, -1px) rotate(1deg); }
+  50% { transform: translate(-1px, 2px) rotate(-1deg); }
+  60% { transform: translate(-3px, 1px) rotate(0deg); }
+  70% { transform: translate(3px, 1px) rotate(-1deg); }
+  80% { transform: translate(-1px, -1px) rotate(1deg); }
+  90% { transform: translate(1px, 2px) rotate(0deg); }
+  100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+
+/* --- UI LAYER (Glassmorphism) --- */
+#ui_layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  pointer-events: none; /* Only children are interactive */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.glass-panel {
+  background: var(--ui-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--ui-border);
+  color: var(--text-color);
+  pointer-events: auto; /* Buttons inside should be clickable */
+}
+
+/* HUD */
+#hud-top {
+  display: flex;
+  justify-content: space-around;
+  padding: 10px;
+  border-radius: 0 0 20px 20px;
+  font-weight: bold;
+}
+
+/* Mode Selector */
+#mode-selector {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 15px;
+  border-radius: 20px 20px 0 0;
+  margin: 0 auto;
+  width: max-content;
+}
+
+.mode-btn {
+  background: transparent;
+  border: 1px solid var(--ui-border);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.mode-btn:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.mode-btn.active {
+  background: rgba(255, 255, 255, 0.6);
+  color: #000;
+}
+
+.mode-btn.special {
+  background-color: rgba(255, 215, 0, 0.5); /* Gold */
+  border-radius: 50%;
+  padding: 10px;
+}
+
+/* Modals */
+.modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+}
+
+.hidden {
+  display: none !important;
+}
+
+#photo-preview-img {
+  max-width: 100%;
+  height: auto;
+  margin: 15px 0;
+  border-radius: 10px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.modal-actions button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background: #fff;
+  color: #000;
+}
+
+/* Flash effect for photo booth */
+.flash {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: white;
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.1s;
+}
+.flash.active {
+  opacity: 1;
+}

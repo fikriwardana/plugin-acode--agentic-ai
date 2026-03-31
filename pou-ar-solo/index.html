@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POU AR SOLO</title>
+  <!-- MediaPipe -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+
+  <!-- html2canvas for Photo Booth -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous"></script>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- CAMERA LAYER -->
+  <video id="input_video" autoplay playsinline></video>
+  <canvas id="output_canvas" width="1280" height="720"></canvas>
+
+  <!-- POU CHARACTER DOM LAYER -->
+  <div id="game_area">
+    <!-- POU Placeholder -->
+    <div id="pou-wrapper">
+      <div id="pou-character" class="pou normal">
+        <div class="pou-body"></div>
+        <div class="eyes">
+          <div class="eye left"></div>
+          <div class="eye right"></div>
+        </div>
+        <div class="mouth"></div>
+      </div>
+    </div>
+
+    <!-- MINIGAME LAYERS -->
+    <!-- Head Racing / Sky Climber / Food Fall layers will be generated dynamically or toggled via CSS -->
+    <div id="minigame-container"></div>
+  </div>
+
+  <!-- UI LAYER (Glassmorphism) -->
+  <div id="ui_layer">
+    <!-- Top HUD: Stats & Currency -->
+    <div id="hud-top" class="glass-panel">
+      <div class="stat"><span class="icon">🍔</span> <span id="val-hunger">100</span>%</div>
+      <div class="stat"><span class="icon">😊</span> <span id="val-happiness">100</span>%</div>
+      <div class="stat"><span class="icon">⚡</span> <span id="val-energy">100</span>%</div>
+      <div class="currency"><span class="icon">💰</span> <span id="val-coins">0</span></div>
+      <div class="currency"><span class="icon">🏎️</span> <span id="val-speedcoins">0</span></div>
+      <div class="currency"><span class="icon">🌟</span> <span id="val-rarefood">0</span></div>
+    </div>
+
+    <!-- Mode Select (Bottom) -->
+    <div id="mode-selector" class="glass-panel">
+      <button class="mode-btn active" data-mode="care">Mode Perawatan</button>
+      <button class="mode-btn" data-mode="sky_climber">Pemanjat Langit</button>
+      <button class="mode-btn" data-mode="head_racing">Balap Kepala</button>
+      <button class="mode-btn" data-mode="food_fall">Hujan Makanan</button>
+      <button id="btn-photo-booth" class="mode-btn special">📸</button>
+    </div>
+
+    <!-- Modals -->
+    <div id="calibration-modal" class="modal glass-panel">
+      <h2>Fase Kalibrasi</h2>
+      <p>Tolong sejajarkan wajahmu ke tengah.</p>
+      <div class="face-outline"></div>
+      <p id="calibration-text">Menunggu...</p>
+    </div>
+
+    <div id="photo-preview-modal" class="modal glass-panel hidden">
+      <h2>Bilik Foto</h2>
+      <img id="photo-preview-img" src="" alt="Pratinjau Foto">
+      <div class="modal-actions">
+        <button id="btn-download-photo">Unduh</button>
+        <button id="btn-share-photo">Bagikan</button>
+        <button id="btn-close-photo">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="game-state.js"></script>
+  <script src="pou-controller.js"></script>
+  <script src="engine.js"></script>
+  <script src="minigames.js"></script>
+</body>
+</html>
