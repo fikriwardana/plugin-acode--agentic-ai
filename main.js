@@ -34,7 +34,6 @@ class AgenticAIPlugin {
 
   async generateCode(input) {
     try {
-      console.log("Generating code for:", input);
       // TODO: Implement multi-provider AI code generation
       return "Code generation feature coming soon...";
     } catch (error) {
