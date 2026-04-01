@@ -18,8 +18,9 @@ class AgenticAIPlugin {
 
   loadStyles() {
     const styleLink = document.createElement("link");
+    styleLink.id = "agentic-ai-style";
     styleLink.rel = "stylesheet";
-    styleLink.href = "./style.css";
+    styleLink.href = (this.baseUrl || "./") + "style.css";
     document.head.appendChild(styleLink);
   }
 
@@ -34,7 +35,6 @@ class AgenticAIPlugin {
 
   async generateCode(input) {
     try {
-      console.log("Generating code for:", input);
       // TODO: Implement multi-provider AI code generation
       return "Code generation feature coming soon...";
     } catch (error) {
@@ -65,12 +65,30 @@ class AgenticAIPlugin {
     }
   }
 
-  onDestroy() {
+  destroy() {
     console.log("Destroying Agentic AI Plugin...");
+    const styleLink = document.getElementById("agentic-ai-style");
+    if (styleLink) {
+      styleLink.remove();
+    }
   }
 }
 
 // Export plugin for Acode
 if (typeof module !== "undefined" && module.exports) {
   module.exports = AgenticAIPlugin;
+}
+
+if (typeof window !== "undefined" && window.acode) {
+  const acodePlugin = new AgenticAIPlugin();
+  window.acode.setPluginInit(acodePlugin.id, async (baseUrl, $page, cache) => {
+    if (!baseUrl.endsWith("/")) {
+      baseUrl += "/";
+    }
+    acodePlugin.baseUrl = baseUrl;
+    await acodePlugin.init();
+  });
+  window.acode.setPluginUnmount(acodePlugin.id, () => {
+    acodePlugin.destroy();
+  });
 }
