@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>POU AR SOLO</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#87CEEB">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- MediaPipe dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+    <!-- html2canvas -->
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+</head>
+<body>
+
+    <!-- Camera Output (underneath) -->
+    <video id="webcam" autoplay playsinline style="display: none;"></video>
+
+    <!-- UI Overlay -->
+    <div id="ui-layer" class="glass-ui">
+
+        <!-- Header Controls -->
+        <header class="top-bar">
+            <div class="stats glass-panel">
+                <span id="hunger-stat">🍔 100%</span>
+                <span id="happiness-stat">❤️ 100%</span>
+                <span id="coins-stat">🪙 0</span>
+            </div>
+
+            <div class="controls">
+                <button id="btn-photo" class="icon-btn glass-btn" title="Photo Booth">📸</button>
+                <button id="btn-mic" class="icon-btn glass-btn" title="Bicara dengan Pou">🎤</button>
+                <button id="btn-settings" class="icon-btn glass-btn" title="Pengaturan">⚙️</button>
+            </div>
+        </header>
+
+        <!-- Main Menu / Minigame Selection -->
+        <nav id="menu-overlay" class="menu-container glass-panel">
+            <h2>Mode Permainan</h2>
+            <div class="menu-grid">
+                <button class="game-btn glass-btn" data-game="care">🏠 Rawat Pou</button>
+                <button class="game-btn glass-btn" data-game="climber">☁️ Sky Climber</button>
+                <button class="game-btn glass-btn" data-game="racing">🏎️ Head Racing</button>
+                <button class="game-btn glass-btn" data-game="foodfall">🍎 Food Fall</button>
+            </div>
+        </nav>
+
+        <!-- Food Drawer -->
+        <div id="food-drawer" class="glass-panel hidden">
+            <div class="food-item" data-food="apple">🍎</div>
+            <div class="food-item" data-food="burger">🍔</div>
+            <div class="food-item" data-food="cake">🍰</div>
+        </div>
+        <div id="dragged-food" class="floating-food hidden"></div>
+
+        <!-- Chat Bubble (Gemini) -->
+        <div id="chat-bubble" class="glass-panel hidden">
+            <p id="chat-text"></p>
+        </div>
+
+        <!-- Visual Onboarding -->
+        <div id="onboarding-overlay" class="fullscreen-overlay glass-panel hidden">
+            <div class="onboarding-content">
+                <div id="onboarding-icon" class="anim-icon"></div>
+                <h3 id="onboarding-text"></h3>
+            </div>
+        </div>
+
+        <!-- Minigame UI -->
+        <div id="minigame-ui" class="hidden">
+            <div class="score-panel glass-panel">Skor: <span id="game-score">0</span></div>
+            <button id="btn-exit-game" class="glass-btn danger">Kembali</button>
+        </div>
+        <canvas id="game-canvas"></canvas>
+
+        <!-- Photo Preview Modal -->
+        <div id="photo-modal" class="fullscreen-overlay glass-panel hidden">
+            <div class="modal-content">
+                <h3>Hasil Foto</h3>
+                <img id="photo-preview" src="" alt="Preview">
+                <div class="modal-actions">
+                    <button id="btn-download" class="glass-btn">⬇️ Unduh</button>
+                    <button id="btn-share" class="glass-btn">🔗 Bagikan</button>
+                    <button id="btn-close-photo" class="glass-btn danger">Tutup</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Modal -->
+        <div id="settings-modal" class="fullscreen-overlay glass-panel hidden">
+            <div class="modal-content">
+                <h3>Pengaturan</h3>
+                <button id="btn-clear-key" class="glass-btn danger w-full">Hapus API Key Gemini</button>
+                <button id="btn-close-settings" class="glass-btn w-full mt-2">Tutup</button>
+            </div>
+        </div>
+
+        <!-- Flash Effect -->
+        <div id="flash-effect"></div>
+    </div>
+
+    <!-- Permission Error Modal -->
+    <div id="permission-modal" class="fullscreen-overlay glass-panel hidden">
+        <div class="modal-content">
+            <h2 style="color: #ff4757;">⚠️ Akses Ditolak</h2>
+            <p>Akses kamera dan mikrofon dibutuhkan untuk bermain. Silakan izinkan di pengaturan browser.</p>
+        </div>
+    </div>
+
+    <!-- Combine Video/Canvas & Pou for Photo Booth -->
+    <div id="capture-container">
+        <canvas id="camera-canvas" class="camera-layer"></canvas>
+        <!-- AR Tracking & Main Scene Container -->
+        <!-- POU HTML PASTE (completed) -->
+        <div class="particle-container" id="particles"></div>
+        <div class="scene" id="scene">
+            <div class="pou normal" id="pou">
+                <div class="body">
+                    <div class="highlight"></div>
+                </div>
+
+                <div class="anger-mark">💢</div>
+                <div class="vein left"></div>
+                <div class="vein right"></div>
+                <div class="vein center"></div>
+
+                <div class="cheek left"></div>
+                <div class="cheek right"></div>
+                <div class="tear left"></div>
+                <div class="tear right"></div>
+                <div class="sweat left"></div>
+                <div class="sweat right"></div>
+
+                <div class="steam one"></div>
+                <div class="steam two"></div>
+                <div class="steam three"></div>
+                <div class="snot"></div>
+
+                <div class="arm left"></div>
+                <div class="arm right"></div>
+                <div class="leg left"></div>
+                <div class="leg right"></div>
+
+                <div class="eyes-container">
+                    <div class="eye-rig">
+                        <div class="sclera">
+                            <div class="iris"><div class="pupil"></div></div>
+                            <div class="eye-shine"></div>
+                        </div>
+                        <div class="eyelid upper"></div>
+                        <div class="eyelid lower"></div>
+                    </div>
+                    <div class="eye-rig">
+                        <div class="sclera">
+                            <div class="iris"><div class="pupil"></div></div>
+                            <div class="eye-shine"></div>
+                        </div>
+                        <div class="eyelid upper"></div>
+                        <div class="eyelid lower"></div>
+                    </div>
+                </div>
+
+                <div class="mouth-container">
+                    <div class="mouth">
+                        <div class="teeth"></div>
+                        <div class="tongue"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="shadow"></div>
+        </div>
+    </div>
+
+    <script src="engine.js"></script>
+    <script src="minigames.js"></script>
+    <script src="game.js"></script>
+
+    <!-- Register Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('SW registered!', reg))
+                    .catch(err => console.log('SW registration failed:', err));
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,647 @@
+/* style.css */
+/* Core Reset & Variables */
+:root {
+    --glass-bg: rgba(255, 255, 255, 0.2);
+    --glass-border: rgba(255, 255, 255, 0.4);
+    --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    --text-primary: #2d3436;
+    --accent: #FF6B6B;
+    --success: #2ed573;
+    --danger: #ff4757;
+    --primary: #1e90ff;
+
+    /* Pou Variables */
+    --body-scale-x: 1;
+    --body-scale-y: 1;
+    --body-skew: 0deg;
+    --body-brightness: 1;
+    --body-saturate: 1;
+    --shadow-scale: 1;
+    --shadow-blur: 8px;
+    --shadow-opacity: 0.2;
+    --pupil-scale: 1;
+    --eyelid-top: 0%;
+    --eyelid-bottom: 0%;
+    --mouth-width: 24px;
+    --mouth-height: 12px;
+    --cheek-opacity: 0;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    overflow: hidden;
+    position: relative;
+    transition: background 0.5s;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* Vignette effect saat marah */
+body.angry-mode {
+    background: radial-gradient(circle, transparent 60%, rgba(139, 0, 0, 0.5) 100%);
+}
+
+/* Glassmorphism Utilities */
+.glass-panel {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    box-shadow: var(--glass-shadow);
+    color: var(--text-primary);
+}
+
+.glass-btn {
+    background: rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 12px;
+    padding: 10px 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.glass-btn:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.glass-btn:active {
+    transform: translateY(1px);
+}
+
+.glass-btn.danger { background: rgba(255, 71, 87, 0.3); color: white; border-color: rgba(255, 71, 87, 0.5); }
+.glass-btn.danger:hover { background: rgba(255, 71, 87, 0.5); }
+
+/* Layout & Layers */
+.camera-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -2;
+    object-fit: cover;
+    transform: scaleX(-1); /* Mirror camera */
+}
+
+#capture-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#ui-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1000;
+    pointer-events: none; /* Let clicks pass through to game/AR */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Re-enable pointer events for specific UI elements */
+.top-bar, .menu-container, #food-drawer, #minigame-ui, .fullscreen-overlay {
+    pointer-events: auto;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Header */
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    width: 100%;
+}
+
+.stats {
+    display: flex;
+    gap: 15px;
+    padding: 10px 20px;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.controls {
+    display: flex;
+    gap: 10px;
+}
+
+.icon-btn {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    padding: 0;
+}
+
+/* Menu Overlay */
+.menu-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 30px;
+    text-align: center;
+    width: 90%;
+    max-width: 400px;
+}
+
+.menu-container h2 {
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+}
+
+.menu-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+}
+
+.game-btn {
+    font-size: 1.1rem;
+    padding: 15px;
+}
+
+/* Fullscreen Overlays (Modals) */
+.fullscreen-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    backdrop-filter: blur(8px);
+}
+
+.modal-content {
+    background: rgba(255, 255, 255, 0.8);
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+    max-width: 90%;
+    width: 350px;
+}
+
+.modal-content h3 { margin-bottom: 15px; }
+
+#photo-preview {
+    width: 100%;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.w-full { width: 100%; }
+.mt-2 { margin-top: 10px; }
+
+/* Visual Onboarding */
+#onboarding-overlay {
+    background: rgba(0,0,0,0.6);
+    transition: opacity 0.5s ease;
+}
+
+.onboarding-content {
+    text-align: center;
+    color: white;
+}
+
+.anim-icon {
+    font-size: 4rem;
+    margin-bottom: 10px;
+    animation: bounce 1s infinite alternate;
+}
+
+@keyframes bounce {
+    from { transform: translateY(0); }
+    to { transform: translateY(-20px); }
+}
+
+/* Chat Bubble */
+#chat-bubble {
+    position: absolute;
+    top: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 15px 25px;
+    max-width: 80%;
+    text-align: center;
+    font-weight: 500;
+    z-index: 100;
+}
+
+/* Food Drawer */
+#food-drawer {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 15px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.food-item {
+    font-size: 2rem;
+    cursor: grab;
+    transition: transform 0.2s;
+}
+.food-item:hover { transform: scale(1.2); }
+.food-item:active { cursor: grabbing; }
+
+.floating-food {
+    position: absolute;
+    font-size: 2rem;
+    pointer-events: none;
+    z-index: 1100;
+    transition: left 0.1s, top 0.1s; /* Smooth dragging if Lerped */
+}
+
+/* Minigame UI & Canvas */
+#minigame-ui {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.score-panel {
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+#game-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    pointer-events: none; /* Let clicks pass if needed */
+}
+
+/* Flash Effect */
+#flash-effect {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: white;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 9999;
+    transition: opacity 0.5s ease-out;
+}
+.flash {
+    opacity: 1 !important;
+    transition: opacity 0.1s ease-in !important;
+}
+
+/* =========================================================
+   POU STYLES (Provided by User)
+   ========================================================= */
+.particle-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+.scene {
+    position: relative;
+    width: 400px;
+    height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.1s linear; /* Smooth AR tracking */
+}
+
+.pou {
+    position: relative;
+    width: 180px;
+    height: 190px;
+    z-index: 100;
+    transition: transform 0.1s linear; /* Smooth scaling */
+}
+
+/* SUPER ANGRY MODE */
+.pou.angry {
+    --body-scale-x: 1.15;
+    --body-scale-y: 0.85;
+    --body-brightness: 0.9;
+    --body-saturate: 1.6;
+    --pupil-scale: 1.4;
+    --eyelid-top: 15%;
+    --eyelid-bottom: 0%;
+    --shadow-scale: 1.1;
+    --shadow-opacity: 0.4;
+    --shadow-blur: 20px;
+    --mouth-width: 40px;
+    --mouth-height: 25px;
+    --cheek-opacity: 0.8;
+    animation: angryShake 0.1s infinite;
+}
+
+.pou.angry .body {
+    background: #C0392B;
+    box-shadow:
+        inset -20px -20px 40px rgba(80,0,0,0.5),
+        inset 20px 20px 40px rgba(255,100,100,0.2),
+        0 0 60px rgba(255,0,0,0.4),
+        0 15px 40px rgba(100,0,0,0.5);
+    animation: angryPulse 0.5s ease-in-out infinite;
+}
+
+@keyframes angryPulse {
+    0%, 100% { transform: scaleX(1.15) scaleY(0.85); }
+    50% { transform: scaleX(1.18) scaleY(0.82); }
+}
+
+@keyframes angryShake {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    25% { transform: translate(-2px, 1px) rotate(-1deg); }
+    50% { transform: translate(2px, -1px) rotate(1deg); }
+    75% { transform: translate(-1px, 2px) rotate(-0.5deg); }
+    100% { transform: translate(1px, -2px) rotate(0.5deg); }
+}
+
+.vein {
+    position: absolute;
+    width: 30px;
+    height: 3px;
+    background: rgba(139, 0, 0, 0.8);
+    border-radius: 2px;
+    opacity: 0;
+    z-index: 50;
+    transition: opacity 0.3s;
+}
+
+.vein.left { top: 25px; left: 40px; transform: rotate(-30deg); }
+.vein.right { top: 25px; right: 40px; transform: rotate(30deg); }
+.vein.center {
+    top: 15px; left: 50%; transform: translateX(-50%) rotate(90deg); width: 20px;
+}
+
+.pou.angry .vein { opacity: 1; animation: veinThrob 0.3s ease-in-out infinite; }
+
+@keyframes veinThrob {
+    0%, 100% { opacity: 0.6; transform: scale(1) rotate(var(--rot, 0deg)); }
+    50% { opacity: 1; transform: scale(1.2) rotate(var(--rot, 0deg)); }
+}
+
+.pou.angry .vein.left { --rot: -30deg; }
+.pou.angry .vein.right { --rot: 30deg; }
+.pou.angry .vein.center { --rot: 90deg; }
+
+.anger-mark {
+    position: absolute;
+    top: -5px;
+    right: 15px;
+    font-size: 40px;
+    z-index: 60;
+    opacity: 0;
+    transform: scale(0);
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    filter: drop-shadow(0 0 10px rgba(255,0,0,0.8));
+}
+
+.pou.angry .anger-mark {
+    opacity: 1;
+    transform: scale(1.2) rotate(-15deg);
+    animation: angerBounce 0.4s ease-in-out infinite;
+}
+
+@keyframes angerBounce {
+    0%, 100% { transform: scale(1.2) rotate(-15deg) translateY(0); filter: drop-shadow(0 0 15px rgba(255,0,0,1)); }
+    50% { transform: scale(1.4) rotate(-20deg) translateY(-5px); filter: drop-shadow(0 0 25px rgba(255,0,0,1)); }
+}
+
+.pou.angry .eye-rig { transform: rotate(5deg); }
+.pou.angry .eye-rig:last-child { transform: rotate(-5deg); }
+.pou.angry .sclera { background: #FFE4E1; box-shadow: inset 0 0 10px rgba(255,0,0,0.2); }
+.pou.angry .iris { background: radial-gradient(circle at 30% 30%, #8B0000 0%, #300 100%); box-shadow: 0 0 15px rgba(255,0,0,0.6); }
+.pou.angry .pupil { background: #000; box-shadow: 0 0 5px rgba(255,0,0,0.8); }
+.pou.angry .eyelid.upper { background: #C0392B; height: 35%; clip-path: polygon(0 0, 100% 40%, 100% 100%, 0 60%); }
+.pou.angry .eyelid.lower { background: #C0392B; height: 10%; }
+
+.pou.angry .mouth {
+    border: none;
+    background: #4a0000;
+    border-radius: 5px 5px 15px 15px;
+    box-shadow: inset 0 5px 10px rgba(0,0,0,0.5);
+    transform: translateX(-50%) scaleY(0.8);
+}
+.pou.angry .mouth::before {
+    content: ''; position: absolute; top: 2px; left: 10%; right: 10%; height: 6px;
+    background: repeating-linear-gradient(90deg, #fff 0px, #fff 6px, #ccc 6px, #ccc 8px);
+}
+.pou.angry .mouth::after {
+    content: ''; position: absolute; bottom: 2px; left: 15%; right: 15%; height: 5px;
+    background: repeating-linear-gradient(90deg, #fff 0px, #fff 5px, #ccc 5px, #ccc 7px);
+}
+
+.pou.angry .cheek { background: radial-gradient(ellipse, rgba(139,0,0,0.9) 0%, transparent 70%); }
+.pou.angry .steam {
+    width: 12px;
+    background: linear-gradient(180deg, rgba(255,50,50,1) 0%, rgba(255,0,0,0.5) 50%, transparent 100%);
+    animation: steamRiseFast 0.4s ease-out infinite;
+}
+
+@keyframes steamRiseFast {
+    0% { transform: translateY(0) scale(0.5) rotate(0deg); opacity: 0; }
+    20% { opacity: 1; }
+    100% { transform: translateY(-60px) scale(1.8) rotate(15deg); opacity: 0; }
+}
+
+.pou.angry .arm, .pou.angry .leg { background: #C0392B; animation: limbShake 0.15s infinite; }
+@keyframes limbShake {
+    0%, 100% { transform: rotate(var(--base-rot, 0deg)) translateX(0); }
+    50% { transform: rotate(var(--base-rot, 0deg)) translateX(2px); }
+}
+.pou.angry .arm.left { --base-rot: -40deg; transform: rotate(-40deg); }
+.pou.angry .arm.right { --base-rot: 40deg; transform: rotate(40deg); }
+.pou.angry ~ .shadow { background: rgba(100,0,0,0.5); filter: blur(25px); }
+
+/* Base Styles */
+.body {
+    position: absolute;
+    width: 180px; height: 190px;
+    background: #F4A460;
+    clip-path: path('M90,5 C125,5 168,45 175,125 C178,160 160,185 90,185 C20,185 2,160 5,125 C12,45 55,5 90,5 Z');
+    box-shadow: inset -20px -20px 40px rgba(0,0,0,0.2), inset 20px 20px 40px rgba(255,255,255,0.4), 0 15px 40px rgba(0,0,0,0.25);
+    top: 0; left: 0;
+    transform: scaleX(var(--body-scale-x)) scaleY(var(--body-scale-y)) skewX(var(--body-skew));
+    filter: brightness(var(--body-brightness)) saturate(var(--body-saturate));
+    transition: all 0.3s;
+    transform-origin: bottom center;
+}
+
+.highlight {
+    position: absolute; width: 60px; height: 30px; background: rgba(255,255,255,0.6);
+    border-radius: 50%; top: 18px; left: 25px; filter: blur(8px); transition: opacity 0.3s;
+}
+.cheek {
+    position: absolute; width: 35px; height: 20px;
+    background: radial-gradient(ellipse, rgba(255,100,100,0.6) 0%, transparent 70%);
+    border-radius: 50%; top: 95px; opacity: var(--cheek-opacity); filter: blur(4px); z-index: 8; transition: opacity 0.3s;
+}
+.cheek.left { left: 15px; } .cheek.right { right: 15px; }
+
+.eyes-container { position: absolute; top: 55px; left: 50%; transform: translateX(-50%); display: flex; gap: 12px; z-index: 10; }
+.eye-rig { position: relative; width: 42px; height: 42px; transition: transform 0.3s; }
+.sclera { position: absolute; inset: 0; background: white; border-radius: 50%; box-shadow: inset 0 3px 6px rgba(0,0,0,0.1); overflow: hidden; }
+.iris { position: absolute; width: 20px; height: 20px; background: radial-gradient(circle at 30% 30%, #444 0%, #000 100%); border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+.pupil { position: absolute; width: 8px; height: 8px; background: #000; border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(var(--pupil-scale)); transition: transform 0.3s; }
+.eye-shine { position: absolute; width: 12px; height: 12px; background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, transparent 70%); border-radius: 50%; top: 8px; right: 8px; }
+.eyelid { position: absolute; left: 0; right: 0; background: #F4A460; z-index: 5; transition: all 0.3s; }
+.eyelid.upper { top: 0; height: var(--eyelid-top); border-radius: 50% 50% 0 0; }
+.eyelid.lower { bottom: 0; height: var(--eyelid-bottom); border-radius: 0 0 50% 50%; }
+
+.mouth-container { position: absolute; bottom: 65px; left: 50%; transform: translateX(-50%); z-index: 10; }
+.mouth {
+    width: var(--mouth-width); height: var(--mouth-height);
+    border: 3px solid #8B4513; border-top: none; border-radius: 0 0 var(--mouth-width) var(--mouth-width);
+    position: relative; transition: all 0.3s; overflow: hidden;
+}
+.tongue { position: absolute; bottom: -100%; left: 50%; transform: translateX(-50%); width: 80%; height: 60%; background: linear-gradient(180deg, #FF6B6B 0%, #FF4444 100%); border-radius: 50% 50% 0 0; transition: bottom 0.3s; }
+.teeth { position: absolute; top: 0; left: 20%; right: 20%; height: 4px; background: white; opacity: 0; }
+
+.arm { position: absolute; width: 28px; height: 42px; background: #F4A460; border-radius: 50%; top: 95px; box-shadow: inset -5px -5px 10px rgba(0,0,0,0.15); z-index: 5; transform-origin: top center; transition: all 0.3s; }
+.arm.left { left: -10px; transform: rotate(-25deg); } .arm.right { right: -10px; transform: rotate(25deg); }
+.leg { position: absolute; width: 35px; height: 30px; background: #F4A460; border-radius: 50%; bottom: 0; box-shadow: inset -5px -5px 10px rgba(0,0,0,0.15); z-index: 5; transform-origin: top center; }
+.leg.left { left: 45px; } .leg.right { right: 45px; }
+
+.shadow {
+    position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%) scale(var(--shadow-scale));
+    width: 150px; height: 25px; background: rgba(0,0,0,var(--shadow-opacity)); border-radius: 50%;
+    filter: blur(var(--shadow-blur)); transition: all 0.3s; z-index: -1;
+}
+
+.tear { position: absolute; width: 12px; height: 16px; background: linear-gradient(180deg, #87CEEB 0%, #4A90E2 100%); border-radius: 50%; opacity: 0; z-index: 15; top: 90px; }
+.tear.left { left: 55px; } .tear.right { right: 55px; }
+.sweat { position: absolute; width: 15px; height: 20px; background: linear-gradient(180deg, #E0F7FA 0%, #B2EBF2 100%); border-radius: 50%; opacity: 0; z-index: 15; top: 40px; }
+.sweat.left { left: 10px; transform: rotate(-20deg); } .sweat.right { right: 10px; transform: rotate(20deg); }
+.steam { position: absolute; width: 8px; height: 25px; background: linear-gradient(180deg, rgba(255,100,100,0.8) 0%, transparent 100%); border-radius: 50%; opacity: 0; z-index: 20; top: -10px; }
+.steam.one { left: 60px; } .steam.two { left: 90px; height: 30px; } .steam.three { right: 60px; }
+.snot { position: absolute; width: 0; height: 0; background: rgba(255,255,255,0.8); border: 2px solid rgba(200,240,255,0.9); border-radius: 50%; right: 45px; top: 85px; opacity: 0; z-index: 15; transition: all 0.5s; }
+
+.zzz { position: absolute; color: #666; font-weight: bold; font-size: 20px; opacity: 0; z-index: 20; }
+
+/* Other expressions */
+.pou.happy { --body-scale-x: 1.05; --body-scale-y: 0.95; --pupil-scale: 0.8; --eyelid-top: 45%; --shadow-scale: 0.8; --mouth-width: 35px; --mouth-height: 22px; --cheek-opacity: 1; }
+.pou.happy .mouth { border-width: 4px; border-color: #D2691E; }
+.pou.happy .tongue { bottom: -20%; }
+
+.pou.sad { --body-scale-x: 0.92; --body-scale-y: 0.88; --body-brightness: 0.85; --pupil-scale: 0.7; --eyelid-top: 25%; --eyelid-bottom: 10%; --shadow-scale: 0.7; --shadow-opacity: 0.3; --mouth-width: 18px; --mouth-height: 10px; }
+.pou.sad .mouth { border-bottom: none; border-top: 3px solid #8B4513; border-radius: 18px 18px 0 0; transform: translateX(-50%) translateY(5px); }
+.pou.sad .tear { opacity: 1; animation: tearDrop 1.5s infinite; }
+.pou.sad .tear.right { animation-delay: 0.5s; }
+@keyframes tearDrop { 0% { transform: translateY(0) scale(0.5); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(60px) scale(0.8); opacity: 0; } }
+
+.pou.surprised { --body-scale-x: 1.1; --body-scale-y: 0.9; --pupil-scale: 0.6; --eyelid-top: 5%; --shadow-scale: 1.2; --mouth-width: 20px; --mouth-height: 30px; }
+.pou.surprised .mouth { border-radius: 50%; background: #3d2817; border: none; }
+.pou.surprised .sweat { opacity: 1; animation: sweatDrop 0.8s infinite; }
+.pou.surprised .sweat.right { animation-delay: 0.2s; }
+@keyframes sweatDrop { 0% { transform: translateY(0) scale(0); opacity: 0; } 20% { transform: translateY(5px) scale(1); opacity: 1; } 100% { transform: translateY(35px) scale(0.8); opacity: 0; } }
+
+.pou.eating { --pupil-scale: 0.3; --eyelid-top: 60%; --eyelid-bottom: 20%; --mouth-width: 40px; --mouth-height: 35px; }
+.pou.eating .mouth { border-radius: 50%; background: #4a2c17; border: none; animation: chew 0.4s infinite; }
+.pou.eating .teeth { opacity: 1; }
+@keyframes chew { 0%, 100% { transform: translateX(-50%) scale(1); } 50% { transform: translateX(-50%) scale(0.9, 0.7); } }
+
+.pou.sleeping { --body-scale-x: 1.02; --body-scale-y: 0.98; --pupil-scale: 0; --eyelid-top: 50%; --eyelid-bottom: 50%; --shadow-scale: 0.95; --shadow-opacity: 0.15; --mouth-width: 12px; --mouth-height: 6px; }
+.pou.sleeping .mouth { border-radius: 50%; background: #8B4513; border: none; }
+.pou.sleeping .snot { width: 25px; height: 25px; opacity: 1; animation: snotGrow 3s infinite; }
+@keyframes snotGrow { 0%, 100% { transform: scale(0.8); } 50% { transform: scale(1.2); } }
+@keyframes floatZ { 0% { transform: translate(0,0) scale(0.3) rotate(-10deg); opacity: 0; } 20% { opacity: 1; } 100% { transform: translate(30px, -70px) scale(1.3) rotate(10deg); opacity: 0; } }
+
+.pou.wink .eye-rig:first-child .eyelid.upper { height: 100%; }
+.pou.wink .eye-rig:first-child .pupil { display: none; }
+
+.jumping { animation: jumpSequence 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+@keyframes jumpSequence {
+    0% { transform: translateY(0) scale(1.1, 0.9); }
+    15% { transform: translateY(-20px) scale(0.9, 1.1); }
+    40% { transform: translateY(-80px) scale(0.95, 1.05); }
+    60% { transform: translateY(-80px) scale(1, 1); }
+    80% { transform: translateY(0) scale(1.15, 0.85); }
+    90% { transform: translateY(-10px) scale(0.98, 1.02); }
+    100% { transform: translateY(0) scale(1, 1); }
+}
+.jumping ~ .shadow { animation: shadowJump 0.8s ease forwards; }
+@keyframes shadowJump {
+    0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.2; }
+    15% { transform: translateX(-50%) scale(0.8); opacity: 0.1; }
+    40%, 60% { transform: translateX(-50%) scale(0.4); opacity: 0.05; }
+    80% { transform: translateX(-50%) scale(1.2); opacity: 0.25; }
+}
+
+/* Particles */
+.particle { position: fixed; pointer-events: none; z-index: 9999; }
+.sparkle-star { color: #FFD700; font-size: 24px; text-shadow: 0 0 10px #FFD700; animation: sparkleAnim 1s ease-out forwards; }
+.sparkle-dot { width: 10px; height: 10px; background: radial-gradient(circle, #FFF 0%, #FFD700 50%, transparent 70%); border-radius: 50%; box-shadow: 0 0 15px #FFD700; animation: sparkleAnim 0.8s ease-out forwards; }
+.sparkle-heart { color: #FF69B4; font-size: 20px; text-shadow: 0 0 10px #FF69B4; animation: sparkleAnim 1.2s ease-out forwards; }
+
+@keyframes sparkleAnim {
+    0% { transform: translate(0, 0) scale(0) rotate(0deg); opacity: 1; }
+    50% { transform: translate(var(--tx), var(--ty)) scale(1.2) rotate(90deg); opacity: 1; }
+    100% { transform: translate(calc(var(--tx) * 1.5), calc(var(--ty) - 50px)) scale(0) rotate(180deg); opacity: 0; }
+}
+
+.burst-ring {
+    position: fixed; width: 100px; height: 100px; border: 4px solid rgba(255,215,0,0.8);
+    border-radius: 50%; transform: translate(-50%, -50%) scale(0); animation: burstExpand 0.6s ease-out forwards;
+    pointer-events: none; z-index: 9998;
+}
+@keyframes burstExpand { to { transform: translate(-50%, -50%) scale(3); opacity: 0; } }

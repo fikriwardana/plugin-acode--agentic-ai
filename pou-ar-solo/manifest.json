@@ -1,0 +1,21 @@
+{
+    "name": "POU AR SOLO",
+    "short_name": "PouAR",
+    "description": "Touchless SPA Virtual Pet game using MediaPipe and Vanilla JS",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#87CEEB",
+    "icons": [
+        {
+            "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIj48cmVjdCB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgZmlsbD0iI0Y0QTQ2MCIgcng9IjUwIi8+PC9zdmc+",
+            "sizes": "192x192",
+            "type": "image/svg+xml"
+        },
+        {
+            "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgZmlsbD0iI0Y0QTQ2MCIgcng9IjEyMCIvPjwvc3ZnPg==",
+            "sizes": "512x512",
+            "type": "image/svg+xml"
+        }
+    ]
+}
