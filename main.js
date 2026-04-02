@@ -9,7 +9,7 @@ class AgenticAIPlugin {
     this.id = "agentic_ai";
   }
 
-  async init() {
+  async init($page, cacheFile, cacheFileUrl) {
     console.log("Initializing Agentic AI Plugin...");
     this.loadStyles();
     this.setupMenu();
@@ -19,7 +19,8 @@ class AgenticAIPlugin {
   loadStyles() {
     const styleLink = document.createElement("link");
     styleLink.rel = "stylesheet";
-    styleLink.href = "./style.css";
+    styleLink.id = `${this.id}-styles`;
+    styleLink.href = this.baseUrl + "style.css";
     document.head.appendChild(styleLink);
   }
 
@@ -34,7 +35,7 @@ class AgenticAIPlugin {
 
   async generateCode(input) {
     try {
-      console.log("Generating code for:", input);
+      // Input logging removed to prevent logging sensitive data
       // TODO: Implement multi-provider AI code generation
       return "Code generation feature coming soon...";
     } catch (error) {
@@ -65,12 +66,32 @@ class AgenticAIPlugin {
     }
   }
 
-  onDestroy() {
+  async destroy() {
     console.log("Destroying Agentic AI Plugin...");
+    const styleLink = document.getElementById(`${this.id}-styles`);
+    if (styleLink) {
+      styleLink.remove();
+    }
   }
 }
 
-// Export plugin for Acode
+if (typeof window !== 'undefined' && window.acode) {
+  const acodePlugin = new AgenticAIPlugin();
+
+  window.acode.setPluginInit(acodePlugin.id, async (baseUrl, $page, { cacheFileUrl, cacheFile } = {}) => {
+    if (!baseUrl.endsWith('/')) {
+      baseUrl += '/';
+    }
+    acodePlugin.baseUrl = baseUrl;
+    await acodePlugin.init($page, cacheFile, cacheFileUrl);
+  });
+
+  window.acode.setPluginUnmount(acodePlugin.id, () => {
+    acodePlugin.destroy();
+  });
+}
+
+// Export plugin for testing/Node.js environment
 if (typeof module !== "undefined" && module.exports) {
   module.exports = AgenticAIPlugin;
 }
